@@ -1,4 +1,5 @@
 # allergies-wtf
+[![Netlify Status](https://api.netlify.com/api/v1/badges/67a12d57-20e4-40a1-b085-6a20598e45b0/deploy-status)](https://app.netlify.com/sites/wtf-allergies/deploys)
 
 ## Project setup
 ```
