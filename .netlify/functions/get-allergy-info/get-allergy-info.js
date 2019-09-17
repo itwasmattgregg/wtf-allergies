@@ -1,5 +1,4 @@
 const chromium = require('chrome-aws-lambda')
-const puppeteer = require('puppeteer-core')
 
 exports.handler = async (event, context, callback) => {
   let location = null;
@@ -8,13 +7,14 @@ exports.handler = async (event, context, callback) => {
   let browser = null
   console.log('spawning chrome headless')
   try {
+    const executable = await chromium.executablePath
     browser = await chromium.puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
+      executablePath: executable,
+      headless: true,
     })
 
-    const zip = event.queryStringParameters.zip;
+    const zip = JSON.parse(event.body).zip;
 
     const page = await browser.newPage();
 
@@ -38,27 +38,24 @@ exports.handler = async (event, context, callback) => {
 
   } catch (err) {
     console.log('error', err)
-    context.fail(err);
-    // return callback(null, {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     error: err
-    //   })
-    // });
+    return callback(null, {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: err
+      })
+    });
   } finally {
     if (browser !== null) {
       await browser.close();
     }
   }
 
-  return context.succeed('ya')
-
-  // return callback(null, {
-  //   statusCode: 200,
-  //   body: JSON.stringify({
-  //     displayLocation: location.DisplayLocation,
-  //     today,
-  //     tomorrow,
-  //   })
-  // })
+  return callback(null, {
+    statusCode: 200,
+    body: JSON.stringify({
+      displayLocation: location.DisplayLocation,
+      today,
+      tomorrow,
+    })
+  })
 };
