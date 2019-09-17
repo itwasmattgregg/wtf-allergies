@@ -8,27 +8,19 @@ exports.handler = async (event, context, callback) => {
   let browser = null
   console.log('spawning chrome headless')
   try {
-    const executablePath = await chromium.executablePath
-
-    if (!event.queryStringParameters.zip) {
-      return {
-        statusCode: 500,
-        body: "No zip code provided."
-      }
-    }
-    const zip = event.queryStringParameters.zip;
-
-    browser = await puppeteer.launch({
+    browser = await chromium.puppeteer.launch({
       args: chromium.args,
-      executablePath: executablePath,
+      executablePath: await chromium.executablePath,
       headless: chromium.headless,
     })
+
+    const zip = event.queryStringParameters.zip;
 
     const page = await browser.newPage();
 
     let responseObj = null;
 
-    page.on('response', async (response) => {
+    await page.on('response', async (response) => {
       if (response.request().url().includes('/api/forecast/current/pollen') && response.request().resourceType().startsWith('xhr')) {
         try {
           responseObj = await response.json()
@@ -40,28 +32,33 @@ exports.handler = async (event, context, callback) => {
 
     await page.goto(`https://www.pollen.com/forecast/current/pollen/${zip}`, { waitUntil: 'networkidle0' });
 
-    location = responseObj.Location;
-    today = location.periods.find(period => period.Type === "Today");
-    tomorrow = location.periods.find(period => period.Type === "Tomorrow");
+    location = await responseObj.Location;
+    today = await location.periods.find(period => period.Type === "Today");
+    tomorrow = await location.periods.find(period => period.Type === "Tomorrow");
 
   } catch (err) {
     console.log('error', err)
-    return callback(null, {
-      statusCode: 500,
-      body: err.toString()
-    });
+    context.fail(err);
+    // return callback(null, {
+    //   statusCode: 500,
+    //   body: JSON.stringify({
+    //     error: err
+    //   })
+    // });
   } finally {
     if (browser !== null) {
       await browser.close();
     }
   }
 
-  return callback(null, {
-    statusCode: 200,
-    body: JSON.stringify({
-      displayLocation: location.DisplayLocation,
-      today,
-      tomorrow,
-    })
-  })
+  return context.succeed('ya')
+
+  // return callback(null, {
+  //   statusCode: 200,
+  //   body: JSON.stringify({
+  //     displayLocation: location.DisplayLocation,
+  //     today,
+  //     tomorrow,
+  //   })
+  // })
 };
