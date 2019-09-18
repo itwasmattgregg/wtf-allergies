@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "postinstall": "netlify-lambda install",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -29,7 +30,8 @@
     "prettier": "^1.18.2",
     "sass": "^1.18.0",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "netlify-lambda": "^1.6.2"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
