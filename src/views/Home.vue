@@ -8,11 +8,17 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from "@/components/HelloWorld.vue";
+import axios from 'axios';
 
 export default {
   name: "home",
   components: {
     HelloWorld
+  },
+  created() {
+    axios.post('/proxy-shit/get-allergies', {
+      zip: '55417'
+    }).then(res => console.log(res));
   }
 };
 </script>
