@@ -17,7 +17,7 @@ export default {
   },
   created() {
     axios
-      .post("/proxy-shit/get-allergies", {
+      .post("/api/fetch-allergies", {
         zip: "55417"
       })
       .then(res => console.log(res));
