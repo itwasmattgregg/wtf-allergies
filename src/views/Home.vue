@@ -1,26 +1,70 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <form @submit.prevent="fetchDemAllergies">
+      <label for="zip">Enter your zip code</label>
+      <input v-model="zip" type="tel" name="zip" id="zip" />
+      <button :disabled="!validZip">Submit</button>
+    </form>
+    <div v-if="data !== null">
+      <div>
+        Allergy info for:
+        {{ data.Location.City }},{{ data.Location.State }}
+      </div>
+      <div>
+        Are allergies gonna fuck up my day?
+        {{ today.Index }}
+      </div>
+      <div>
+        Top allergens:
+        <ul>
+          <li v-for="allergen in today.Triggers" :key="allergen.LGID">
+            {{ allergen.Name }}
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
 import axios from "axios";
 
 export default {
   name: "home",
-  components: {
-    HelloWorld
+  data() {
+    return {
+      zip: null,
+      data: null
+    };
+  },
+  computed: {
+    validZip() {
+      return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(this.zip);
+    },
+    today() {
+      return this.data.Location.periods.find(item => item.Type === "Today");
+    }
+  },
+  methods: {
+    fetchDemAllergies() {
+      if (this.validZip) {
+        localStorage.setItem("zip", this.zip);
+        axios
+          .post("/api/fetch-allergies", {
+            zip: this.zip
+          })
+          .then(res => {
+            this.data = res.data;
+          });
+      }
+    }
   },
   created() {
-    axios
-      .post("/api/fetch-allergies", {
-        zip: "55417"
-      })
-      .then(res => console.log(res));
+    const zip = localStorage.getItem("zip");
+    if (zip) {
+      this.zip = zip;
+      this.fetchDemAllergies();
+    }
   }
 };
 </script>
