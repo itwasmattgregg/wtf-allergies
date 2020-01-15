@@ -14,7 +14,7 @@
         Are allergies gonna fuck up my day?
         {{ today.Index }}
       </div>
-      <div>
+      <div v-if="today.Triggers.length > 0">
         Top allergens:
         <ul>
           <li v-for="allergen in today.Triggers" :key="allergen.LGID">
