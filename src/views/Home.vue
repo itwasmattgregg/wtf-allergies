@@ -8,8 +8,8 @@
       <button :disabled="!validZip" class="button">Submit</button>
     </form>
     <div v-if="data !== null" class="results-container">
-      <div class="location">
-        {{ transformedLocation }}
+      <div>
+        Today in <span class="location">{{ transformedLocation }}</span>
       </div>
       <div class="fuckometer">
         <div class="gauge-wrapper">
@@ -35,7 +35,7 @@
           </svg>
           <div class="index">{{ today.Index }}</div>
         </div>
-        <div className="font_monad">Allergen Fuck-o-meter</div>
+        <div><strong>Allergen Fuck-o-meter</strong></div>
       </div>
       <div v-if="today.Triggers.length > 0">
         <strong>Top Allergens</strong>
@@ -137,10 +137,9 @@ export default {
 }
 .location {
   text-transform: capitalize;
-  margin-bottom: 2em;
 }
 .fuckometer {
-  margin-bottom: 2em;
+  margin: 2em 0;
 }
 .gauge-wrapper {
   display: grid;
