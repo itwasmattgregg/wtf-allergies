@@ -104,9 +104,12 @@ export default {
 <style lang="scss" scoped>
 .form-group {
   max-width: 400px;
+  width: 100%;
   margin: 0 auto;
+  position: relative;
 }
 .input {
+  box-sizing: border-box;
   width: 100%;
   display: block;
   margin-bottom: 1em;
